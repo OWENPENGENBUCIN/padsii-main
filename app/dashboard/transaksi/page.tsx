@@ -2,10 +2,9 @@ import Pagination from '@/app/ui/transaksi/pagination';
 import Search from '@/app/ui/search';
 import Table from '@/app/ui/transaksi/table';
 import { CreateTransaksiButton } from '@/app/ui/transaksi/buttons';
-
 import { lusitana } from '@/app/ui/fonts';
 import { Suspense } from 'react';
-import { fetchTransaksiPages } from '@/app/lib/transaksi/transaksi';
+import { fetchTransaksiPages } from '@/app/lib/transaksi';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {

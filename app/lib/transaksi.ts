@@ -1,7 +1,8 @@
 
 import { unstable_noStore as noStore } from "next/cache";
 import { sql } from "@vercel/postgres";
-import { TransaksiTable } from "../definitions";
+import { TransaksiTable } from "./definitions";
+
 
 const ITEMS_PER_PAGE = 10;
 

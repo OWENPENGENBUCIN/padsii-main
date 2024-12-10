@@ -1,5 +1,6 @@
 import { createPool } from "@vercel/postgres";
-import { Laporan } from "../definitions";
+import { Laporan } from "./definitions";
+
 
 const pool = createPool({
   connectionString:

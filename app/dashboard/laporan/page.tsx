@@ -1,6 +1,6 @@
 import React from 'react';
 import LaporanClient from '@/app/ui/laporan/Laporan';
-import { fetchLaporanByMonth } from '@/app/lib/laporan/laporan';
+import { fetchLaporanByMonth } from '@/app/lib/laporan';
 
 export default async function LaporanPage({
   searchParams,

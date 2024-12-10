@@ -1,7 +1,6 @@
 import React from 'react';
 
 import Breadcrumbs from '@/app/ui/menu/breadcrumbs';
-import { Menu } from '@/app/lib/definitions';
 import EditMenuForm from '@/app/ui/menu/edit-form';
 import { fetchMenuById } from '@/app/lib/menu/cruds-menu';
 

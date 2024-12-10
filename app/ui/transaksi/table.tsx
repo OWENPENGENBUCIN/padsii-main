@@ -1,4 +1,4 @@
-import { fetchFilteredTransaksi } from '@/app/lib/transaksi/transaksi';
+import { fetchFilteredTransaksi } from '@/app/lib/transaksi';
 import { formatCurrency, formatDateToLocal } from '@/app/lib/utils';
 
 export default async function TransaksiTable({
