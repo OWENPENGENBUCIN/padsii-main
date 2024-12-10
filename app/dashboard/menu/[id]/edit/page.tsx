@@ -4,21 +4,19 @@ import Breadcrumbs from '@/app/ui/menu/breadcrumbs';
 import EditMenuForm from '@/app/ui/menu/edit-form';
 import { fetchMenuById } from '@/app/lib/menu/cruds-menu';
 
-export default async function MenuEditPage({ params }: { params: { id: string } }) {
-  console.log('Params:', params);
 
-  const { id } = params;
 
-  if (!id) {
-    return <div>Error: ID menu tidak ditemukan!</div>;
-  }
+interface PageProps {
+  params: Promise<{ id: string }>;
+}
 
-  const menu = await fetchMenuById(id);
+export default async function Page({ params }: PageProps) {
+  const { id } = await params;  // Menunggu resolve dari Promise
+  const menu = await fetchMenuById(id);  // Mengambil data diskon berdasarkan id
 
   if (!menu) {
-    return <div>Error: Menu tidak ditemukan!</div>;
+    return <div>Member not found</div>; 
   }
-
   return (
     <main>
       <Breadcrumbs

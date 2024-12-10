@@ -11,16 +11,17 @@ export const metadata: Metadata = {
   title: 'Daftar Member',
 };
 
-export default async function MemberPage({
-  searchParams,
-}: {
-  searchParams?: {
+export default async function MemberPage(
+  props: {
+  searchParams?: Promise<{
     query?: string;
     page?: string;
-  };
+  }>;
 }) {
+  const searchParams = await props.searchParams;
   const query = searchParams?.query || '';
-  const currentPage = Number(searchParams?.page) || 1;
+  const currentPage = Number(searchParams?.page) || 1;
+  
   const totalPages = await fetchMemberPages(query);
 
   return (

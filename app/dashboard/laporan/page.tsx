@@ -3,15 +3,17 @@ import LaporanClient from '@/app/ui/laporan/Laporan';
 import { fetchLaporanByMonth } from '@/app/lib/laporan';
 
 type LaporanPageProps = {
-  searchParams?: { month?: string };
+  searchParams?: Promise<{ month?: string }>;
 };
 
 export default async function LaporanPage({
   searchParams,
 }: LaporanPageProps) {
-  // Pastikan month diproses jika ada
-  const selectedMonth = searchParams?.month
-    ? parseInt(searchParams.month, 10)
+  // Menunggu promise yang dihasilkan oleh searchParams
+  const resolvedSearchParams = await searchParams;
+
+  const selectedMonth = resolvedSearchParams?.month
+    ? parseInt(resolvedSearchParams.month, 10)
     : new Date().getMonth() + 1;
 
   // Ambil data laporan berdasarkan bulan yang dipilih

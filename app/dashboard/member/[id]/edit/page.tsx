@@ -3,13 +3,19 @@ import { fetchMemberById } from '@/app/lib/member/cruds-member';
 import Breadcrumbs from '@/app/ui/member/breadcrumbs';
 import EditMemberForm from '@/app/ui/member/edit-form';
 
-export default async function MemberEditPage({ params }: { params: { id: string } }) {
-  const { id } = params;
 
-  const member = await fetchMemberById(id);
+
+interface PageProps {
+  params: Promise<{ id: string }>;
+}
+
+
+export default async function Page({ params }: PageProps) {
+  const { id } = await params;  // Menunggu resolve dari Promise
+  const member = await fetchMemberById(id);  // Mengambil data diskon berdasarkan id
 
   if (!member) {
-    return <div>Error: Member tidak ditemukan!</div>;
+    return <div>Member not found</div>; 
   }
 
   return (

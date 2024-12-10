@@ -11,13 +11,16 @@ export const metadata: Metadata = {
   title: 'Daftar Menu',
 };
 
-export default async function TransaksiPage({
-  searchParams,
-}: {
-  searchParams?: Record<string, string | undefined>;
+export default async function TransaksiPage(
+  props: {
+  searchParams?: Promise<{
+    query?: string;
+    page?: string;
+  }>;
 }) {
-  const query = searchParams?.query ?? ""; 
-  const currentPage = Number(searchParams?.page ?? 1); 
+  const searchParams = await props.searchParams;
+  const query = searchParams?.query || '';
+  const currentPage = Number(searchParams?.page) || 1; 
 
   const totalPages = await fetchTransaksiPages(query);
 
