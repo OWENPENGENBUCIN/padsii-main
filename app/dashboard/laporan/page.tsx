@@ -2,15 +2,19 @@ import React from 'react';
 import LaporanClient from '@/app/ui/laporan/Laporan';
 import { fetchLaporanByMonth } from '@/app/lib/laporan';
 
+type LaporanPageProps = {
+  searchParams?: { month?: string };
+};
+
 export default async function LaporanPage({
   searchParams,
-}: {
-  searchParams?: { month?: string };
-}) {
+}: LaporanPageProps) {
+  // Pastikan month diproses jika ada
   const selectedMonth = searchParams?.month
     ? parseInt(searchParams.month, 10)
     : new Date().getMonth() + 1;
 
+  // Ambil data laporan berdasarkan bulan yang dipilih
   const reportData = await fetchLaporanByMonth(selectedMonth);
 
   return (

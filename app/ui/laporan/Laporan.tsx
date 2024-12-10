@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { fetchLaporanByMonth } from '@/app/lib/laporan/laporan';
+import { fetchLaporanByMonth } from '@/app/lib/laporan';
 import { Button } from '@/app/ui/button';
 import { Laporan } from '@/app/lib/definitions';
 
