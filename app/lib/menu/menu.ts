@@ -64,3 +64,26 @@ export async function fetchMenus() {
     throw new Error("Failed to fetch menus.");
   }
 }
+
+export async function fetchLatestMenus() {
+  noStore();
+  try {
+    const data = await sql<MenuTable>`
+      SELECT 
+        menus.id, 
+        menus.nama_menu, 
+        menus.harga_menu,
+        menus.created_at
+        FROM menus
+        ORDER BY menus.nama_menu ASC
+      LIMIT 5`;
+
+    const LatestMenus = data.rows.map((menu) => ({
+      ...menu,
+    }));
+    return LatestMenus;
+  } catch (error) {
+    console.error('Database Error:', error);
+    throw new Error('Failed to fetch the latest apakah salah.');
+  }
+}

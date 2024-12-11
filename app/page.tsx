@@ -6,36 +6,54 @@ import { kanit, anton, inter, lusitana } from '@/app/ui/fonts';
 
 export default function Page() {
   return (
-    <main className="flex min-h-screen flex-col p-6 relative">
+        <main className="flex min-h-screen flex-col relative">
+      {/* Header */}
+      <header className="flex justify-between items-center bg-white p-2 shadow-md">
+        {/* Teks Nashville Hot Chicken di sisi kiri */}
+        <div className="text-lg font-bold text-gray-800">
+          <h1>Heatbite Nashville</h1>
+        </div>
+        {/* Tombol Login di sisi kanan */}
+        <div>
+          <Link
+            href="/login"
+            className="px-5 py-2 bg-amber-600 text-white text-lg font-semibold rounded-md shadow-lg transition transform hover:bg-amber-950 hover:scale-105 focus:outline-none focus:ring-4 focus:ring-blue-300"
+          >
+            Login
+          </Link>
+        </div>
+      </header>
+
       {/* Background Image */}
-      <Image
-        src="/Nashville_Hot.jpg"
-        layout="fill"
-        objectFit="cover"
-        alt="Nashville Hot Chicken"
-      />
+      <div className="relative flex-1">
+        <Image
+          src="/Nashville_Hot.jpg"
+          layout="fill"
+          objectFit="cover"
+          alt="Nashville Hot Chicken"
+        />
 
-      {/* Text Overlay */}
-      <div className="absolute inset-0 flex justify-center items-center">
-        <h1
-          className="text-white text-5xl md:text-7xl font-extrabold tracking-wide"
-          style={{
-            textShadow: "4px 4px 8px rgba(0, 0, 0, 0.6)", // Efek bayangan teks
-          }}
-        >
-          Nashville Hot Chicken
-        </h1>
+        {/* Text Overlay */}
+        <div className="absolute inset-0 flex justify-start items-center pl-6">
+          <h1
+            className="text-white text-5xl md:text-7xl font-extrabold tracking-wide"
+            style={{
+              textShadow: "4px 4px 8px rgba(0, 0, 0, 0.6)", // Efek bayangan teks
+            }}
+          >
+            Nashville Hot Chicken
+            <p className="text-sm text-white">Deliciously Spicy and Crispy</p>
+          </h1>
+        
+        </div>
       </div>
 
-      {/* Login Button */}
-      <div className="absolute bottom-12 right-16"> {/* Slightly moved left by changing right-4 to right-6 */}
-        <Link
-          href="/login"
-          className="px-6 py-3 bg-blue-500 text-white text-lg font-semibold rounded-full shadow-lg transition transform hover:bg-blue-600 hover:scale-105 focus:outline-none focus:ring-4 focus:ring-blue-300"
-        >
-          Login
-        </Link>
-      </div>
+      {/* Footer */}
+      <footer className="bg-gray-300 py-4">
+        <div className="container mx-auto text-center">
+          <p className="text-sm text-gray-700">© 2024 Nashville Hot Chicken. All rights reserved.</p>
+        </div>
+      </footer>
     </main>
   );
 }

@@ -4,7 +4,8 @@ import {
   UserGroupIcon,
   HomeIcon,
   DocumentDuplicateIcon,
-  ClipboardDocumentIcon, // You can remove this if not used
+  ClipboardDocumentIcon,
+  Bars3Icon, // You can remove this if not used
 } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -13,7 +14,7 @@ import clsx from 'clsx';
 // Updated map of links to display in the side navigation.
 const links = [
   { name: 'home', href: '/dashboard', icon: HomeIcon },
-  { name: 'Menu', href: '/dashboard/menu', icon: UserGroupIcon }, 
+  { name: 'Menu', href: '/dashboard/menu', icon: Bars3Icon }, 
   { name: 'Member', href: '/dashboard/member', icon: UserGroupIcon },
   { name: 'Transaksi', href: '/dashboard/transaksi', icon: DocumentDuplicateIcon },  
   { name: 'Laporan', href: '/dashboard/laporan', icon: ClipboardDocumentIcon },  
