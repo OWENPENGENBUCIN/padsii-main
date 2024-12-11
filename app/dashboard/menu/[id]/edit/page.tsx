@@ -11,8 +11,8 @@ interface PageProps {
 }
 
 export default async function Page({ params }: PageProps) {
-  const { id } = await params;  // Menunggu resolve dari Promise
-  const menu = await fetchMenuById(id);  // Mengambil data diskon berdasarkan id
+  const { id } = await params;  
+  const menu = await fetchMenuById(id);  
 
   if (!menu) {
     return <div>Member not found</div>; 
