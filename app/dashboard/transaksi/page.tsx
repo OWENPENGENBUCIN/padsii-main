@@ -8,7 +8,7 @@ import { fetchTransaksiPages } from '@/app/lib/transaksi';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Daftar Menuu',
+  title: 'Daftar Menu',
 };
 
 export default async function TransaksiPage(
