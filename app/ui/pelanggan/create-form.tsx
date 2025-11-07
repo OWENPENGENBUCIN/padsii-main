@@ -5,13 +5,13 @@ import Link from "next/link";
 import { UserCircleIcon, PhoneIcon } from "@heroicons/react/24/outline";
 import { Button } from "@/app/ui/button";
 import { useRouter } from "next/navigation";
-import { createMember } from "@/app/lib/member/cruds-member";
+import { createPelanggan } from "@/app/lib/pelanggans/cruds-pelanggan";
 
 type State = {
   message?: string;
   errors?: {
-    nama_member?: string[];
-    nohp_member?: string[];
+    nama_pelanggan?: string[];
+    nohp_pelanggan?: string[];
   };
 };
 
@@ -28,7 +28,7 @@ export default function Form() {
     const formData = new FormData(e.currentTarget);
 
     try {
-      const response = await createMember(formData);
+      const response = await createPelanggan(formData);
 
       if (!response.success) {
         setState({
@@ -37,10 +37,10 @@ export default function Form() {
         });
       } else {
         router.refresh();
-        router.push("/dashboard/member");
+        router.push("/dashboard/pelanggan");
       }
     } catch (error) {
-      console.error("Error creating member:", error);
+      console.error("Error creating pelanggan:", error);
       setState({
         message: "An unexpected error occurred.",
         errors: {},
@@ -54,22 +54,22 @@ export default function Form() {
     <form onSubmit={handleSubmit}>
       <div className="rounded-md bg-gray-50 p-4 md:p-6">
         <div className="mb-4">
-          <label htmlFor="nama_member" className="block text-sm font-medium mb-2">
+          <label htmlFor="nama_pelanggan" className="block text-sm font-medium mb-2">
             Name
           </label>
           <div className="relative">
             <input
-              id="nama_member"
-              name="nama_member"
+              id="nama_pelanggan"
+              name="nama_pelanggan"
               type="text"
-              placeholder="Nama Member"
+              placeholder="Nama Pelanggan"
               className="block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder-gray-500"
             />
             <UserCircleIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
           </div>
-          {state.errors?.nama_member && (
+          {state.errors?.nama_pelanggan && (
             <div className="mt-2 text-sm text-red-500">
-              {state.errors.nama_member.map((error) => (
+              {state.errors.nama_pelanggan.map((error) => (
                 <p key={error}>{error}</p>
               ))}
             </div>
@@ -77,22 +77,22 @@ export default function Form() {
         </div>
 
         <div className="mb-4">
-          <label htmlFor="nohp_member" className="block text-sm font-medium mb-2">
+          <label htmlFor="nohp_pelanggan" className="block text-sm font-medium mb-2">
             Phone Number
           </label>
           <div className="relative">
             <input
-              id="nohp_member"
-              name="nohp_member"
+              id="nohp_pelanggan"
+              name="nohp_pelanggan"
               type="text"
               placeholder="Nomor HP"
               className="block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder-gray-500"
             />
             <PhoneIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
           </div>
-          {state.errors?.nohp_member && (
+          {state.errors?.nohp_pelanggan && (
             <div className="mt-2 text-sm text-red-500">
-              {state.errors.nohp_member.map((error) => (
+              {state.errors.nohp_pelanggan.map((error) => (
                 <p key={error}>{error}</p>
               ))}
             </div>
@@ -112,13 +112,13 @@ export default function Form() {
 
       <div className="mt-6 flex justify-end gap-4">
         <Link
-          href="/dashboard/member"
+          href="/dashboard/pelanggan"
           className="flex h-10 items-center rounded-lg bg-gray-100 px-4 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-200"
         >
           Cancel
         </Link>
         <Button type="submit" disabled={isLoading}>
-          {isLoading ? "Creating..." : "Create Member"}
+          {isLoading ? "Creating..." : "Create pelanggan"}
         </Button>
       </div>
     </form>

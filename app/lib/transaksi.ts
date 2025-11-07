@@ -17,7 +17,7 @@ export async function fetchFilteredTransaksi(
     const transaksis = await sql<TransaksiTable>`
       SELECT DISTINCT
         transaksis.id,
-        transaksis.member_nama,
+        transaksis.pelanggan_nama,
         transaksis.tanggal_transaksi,
         transaksis.total_harga,
         transaksis.pembayaran,
@@ -25,8 +25,8 @@ export async function fetchFilteredTransaksi(
         transaksis.created_at
       FROM transaksis
       WHERE                                                                                                                                                                                            
-        transaksis.member_nama ILIKE ${`%${query}%`} OR
-        transaksis.member_nama IS NULL OR
+        transaksis.pelanggan_nama ILIKE ${`%${query}%`} OR
+        transaksis.pelanggan_nama IS NULL OR
         transaksis.tanggal_transaksi::text ILIKE ${`%${query}%`} OR
         transaksis.total_harga::text ILIKE ${`%${query}%`} OR
         transaksis.pembayaran::text ILIKE ${`%${query}%`} OR
@@ -48,7 +48,7 @@ export async function fetchTransaksiPages(query: string) {
       SELECT COUNT(DISTINCT transaksis.id) AS count
       FROM transaksis
       WHERE
-        transaksis.member_nama ILIKE ${`%${query}%`} OR
+        transaksis.pelanggan_nama ILIKE ${`%${query}%`} OR
         transaksis.tanggal_transaksi::text ILIKE ${`%${query}%`} OR
         transaksis.total_harga::text ILIKE ${`%${query}%`} OR
         transaksis.pembayaran::text ILIKE ${`%${query}%`} OR
@@ -64,7 +64,7 @@ export async function fetchTransaksiPages(query: string) {
 
 export async function createTransaksi(data: {
   selectedMenus: { id_menu: string; jumlah: number }[];
-  selectedMember: string | null;
+  selectedpelanggan: string | null;
   totalHarga: number;
   pembayaran: number;
   tanggalTransaksi: string;
@@ -73,7 +73,7 @@ export async function createTransaksi(data: {
   try {
     const {
       selectedMenus,
-      selectedMember,
+      selectedpelanggan,
       totalHarga,
       pembayaran,
       tanggalTransaksi,
@@ -88,21 +88,21 @@ export async function createTransaksi(data: {
       throw new Error("Pembayaran kurang.");
     }
 
-    let referredMemberId: string | null = null;
+    let referredPelangganId: string | null = null;
     if (referralPhone) {
       const referralResult = await sql`
         SELECT id
-        FROM members
-        WHERE nohp_member = ${referralPhone}
+        FROM pelanggans
+        WHERE nohp_pelanggan = ${referralPhone}
       `;
 
       if (referralResult.rows.length === 0) {
         throw new Error("Kode referral tidak valid. Nomor HP tidak ditemukan.");
       }
 
-      referredMemberId = referralResult.rows[0].id;
+      referredPelangganId = referralResult.rows[0].id;
 
-      if (selectedMember && referredMemberId === selectedMember) {
+      if (selectedpelanggan && referredPelangganId === selectedpelanggan) {
         throw new Error(
           "Kode referral tidak valid. Nomor HP harus milik anggota lain."
         );
@@ -110,9 +110,9 @@ export async function createTransaksi(data: {
     }
 
     const transaksiResult = await sql`
-      INSERT INTO transaksis (member_id, tanggal_transaksi, total_harga, pembayaran, kembalian, referral_phone)
+      INSERT INTO transaksis (Pelanggan_id, tanggal_transaksi, total_harga, pembayaran, kembalian, referral_phone)
       VALUES (
-        ${selectedMember || null},
+        ${selectedpelanggan || null},
         ${tanggalTransaksi},
         ${totalHarga},
         ${pembayaran},

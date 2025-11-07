@@ -1,25 +1,25 @@
 'use client';
-import { deleteMember } from '@/app/lib/member/cruds-member';
+import { deletePelanggan } from '@/app/lib/pelanggans/cruds-pelanggan';
 import { PencilIcon, PlusIcon, TrashIcon } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import { useState } from 'react';
-import DeleteMemberModal from './delete-member-modal';
+import DeletePelangganModal from '@/app/ui/pelanggan/delete-pelanggan-modal';
 
-export function CreateMemberButton() {
+export function CreatePelangganButton() {
   return (
     <Link
-      href="/dashboard/member/create"
+      href="/dashboard/pelanggan/create"
       className="flex h-10 items-center rounded-lg bg-blue-600 px-4 text-sm font-medium text-white transition-transform transform hover:scale-105 hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
     >
-      <span className="hidden md:block">Tambah Member</span>
+      <span className="hidden md:block">Tambah Pelanggan</span>
     </Link>
   );
 }
 
-export function UpdateMemberButton({ id }: { id: string }) {
+export function UpdatePelangganButton({ id }: { id: string }) {
   return (
     <Link
-      href={`/dashboard/member/${id}/edit`}
+      href={`/dashboard/pelanggan/${id}/edit`}
       className="rounded-md border p-2 hover:bg-gray-100"
     >
       <PencilIcon className="w-5" />
@@ -27,13 +27,13 @@ export function UpdateMemberButton({ id }: { id: string }) {
   );
 }
 
-export function DeleteMemberButton({ id }: { id: string }) {
+export function DeletePelangganButton({ id }: { id: string }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   const handleDelete = async () => {
     setIsLoading(true);
-    const response = await deleteMember(id);
+    const response = await deletePelanggan(id);
     setIsModalOpen(false);
     window.location.reload();
     setIsLoading(false);
@@ -49,7 +49,7 @@ export function DeleteMemberButton({ id }: { id: string }) {
       </button>
 
       {isModalOpen && (
-        <DeleteMemberModal
+        <DeletePelangganModal
           onDelete={handleDelete}
           onCancel={() => setIsModalOpen(false)}
           isLoading={isLoading}

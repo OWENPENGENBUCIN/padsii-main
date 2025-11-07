@@ -3,17 +3,17 @@
 import React from 'react';
 import { Button } from '@/app/ui/button';
 
-type DeleteMemberModalProps = {
+type DeletePelangganModalProps = {
   onDelete: () => void;
   onCancel: () => void;
   isLoading: boolean;
 };
 
-export default function DeleteMemberModal({
+export default function DeletePelangganModal({
   onDelete,
   onCancel,
   isLoading,
-}: DeleteMemberModalProps) {
+}: DeletePelangganModalProps) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
       <div className="w-full max-w-md rounded-lg bg-white p-6 shadow-lg">
@@ -27,7 +27,7 @@ export default function DeleteMemberModal({
             whiteSpace: 'normal',
           }}
         >
-          Apakah Anda yakin ingin menghapus member ini? Tindakan ini tidak dapat
+          Apakah Anda yakin ingin menghapus pelanggan ini? Tindakan ini tidak dapat
           dibatalkan.
         </p>
         <div className="mt-4 flex justify-end gap-4">

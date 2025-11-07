@@ -18,23 +18,23 @@ export type MenuTable = {
   jumlah:number;
 };
 
-export type Member = {
+export type Pelanggan = {
   id: string;
-  nama_member: string;
-  nohp_member: string;
+  nama_pelanggan: string;
+  nohp_pelanggan: string;
   referral_count: number;
 };
 
-export type MemberTable = {
+export type PelangganTable = {
   id: string;
-  nama_member: string;
-  nohp_member: string;
+  nama_pelanggan: string;
+  nohp_pelanggan: string;
   referral_count: number;
 };
 
 export type Transaksi = {
   id: string;
-  member_nama:string;
+  pelanggan_nama:string;
   tanggal_transaksi: string;
   total_harga: number;
   pembayaran:number;
@@ -43,7 +43,7 @@ export type Transaksi = {
 
 export type TransaksiTable = {
   id: string;
-  member_nama:string;
+  pelanggan_nama:string;
   tanggal_transaksi: string;
   total_harga: number;
   pembayaran:number;
@@ -59,7 +59,7 @@ export interface Laporan {
   jumlah: number;                
   nama_menu: string;             
   total_menu_harga: number;      
-  member_nama: string | null;    
+  pelanggan_nama: string | null;    
 }
 
 

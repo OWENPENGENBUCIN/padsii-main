@@ -13,7 +13,7 @@ export async function fetchLaporanByMonth(month: number): Promise<Laporan[]> {
     const laporan = await pool.sql<Laporan>` 
       SELECT 
         t.id AS transaksi_id,
-        t.member_nama,
+        t.pelanggan_nama,
         t.tanggal_transaksi,
         t.total_harga,
         t.pembayaran,

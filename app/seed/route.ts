@@ -1,6 +1,6 @@
 import bcrypt from 'bcrypt';
 import { db } from '@vercel/postgres';
-import { members, users, transaksis, menus } from '../lib/placeholder-data';
+import { pelanggans, users, transaksis, menus } from '../lib/placeholder-data';
 
 const client = await db.connect();
 
@@ -13,7 +13,7 @@ async function seedUsers() {
       email VARCHAR(255) NOT NULL UNIQUE,
       password VARCHAR(255) NOT NULL,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    );
+    ); 
   `;
 
   const insertedUsers = await Promise.all(
@@ -30,29 +30,29 @@ async function seedUsers() {
   return insertedUsers;
 }
 
-async function seedMembers() {
+async function seedPelanggans() {
   await client.sql`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`;
   await client.sql`
-    CREATE TABLE IF NOT EXISTS members (
+    CREATE TABLE IF NOT EXISTS pelanggans (
       id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-      nama_member VARCHAR(255) NOT NULL,
-      nohp_member VARCHAR(255) NOT NULL,
+      nama_pelanggan VARCHAR(255) NOT NULL,
+      nohp_pelanggan VARCHAR(255) NOT NULL,
       referral_count INT DEFAULT 0,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
   `;
 
-  const insertedMembers = await Promise.all(
-    members.map(
-      (member) => client.sql`
-        INSERT INTO members (nama_member, nohp_member)
-        VALUES (${member.nama_member}, ${member.nohp_member})
+  const insertedPelanggans = await Promise.all(
+    pelanggans.map(
+      (pelanggan) => client.sql`
+        INSERT INTO pelanggans (nama_pelanggan, nohp_pelanggan)
+        VALUES (${pelanggan.nama_pelanggan}, ${pelanggan.nohp_pelanggan})
         ON CONFLICT (id) DO NOTHING;
       `
     )
   );
 
-  return insertedMembers;
+  return insertedPelanggans;
 }
 
 async function seedMenu() {
@@ -84,7 +84,7 @@ async function seedTransaksi() {
   await client.sql`
     CREATE TABLE IF NOT EXISTS transaksis (
       id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-      member_nama VARCHAR(255) NOT NULL,
+      pelanggan_nama VARCHAR(255) NOT NULL,
       tanggal_transaksi DATE NOT NULL,
       total_harga DECIMAL(15,2) NOT NULL,
       pembayaran DECIMAL(15,2) NOT NULL,
@@ -96,8 +96,8 @@ async function seedTransaksi() {
   const insertedTransaksi = await Promise.all(
     transaksis.map(
       (transaksi) => client.sql`
-        INSERT INTO transaksis (member_nama, tanggal_transaksi, total_harga, pembayaran, kembalian)
-        VALUES (${transaksi.member_nama}, ${transaksi.tanggal_transaksi}, ${transaksi.total_harga}, ${transaksi.pembayaran}, ${transaksi.kembalian})
+        INSERT INTO transaksis (pelanggan_nama, tanggal_transaksi, total_harga, pembayaran, kembalian)
+        VALUES (${transaksi.pelanggan_nama}, ${transaksi.tanggal_transaksi}, ${transaksi.total_harga}, ${transaksi.pembayaran}, ${transaksi.kembalian})
         ON CONFLICT (id) DO NOTHING;
       `
     )
@@ -123,7 +123,7 @@ export async function GET() {
   try {
     await client.sql`BEGIN`;
     await seedUsers();
-    await seedMembers();
+    await seedPelanggans();
     await seedMenu();
     await seedTransaksi();
     await seedTransaksiMenus();
