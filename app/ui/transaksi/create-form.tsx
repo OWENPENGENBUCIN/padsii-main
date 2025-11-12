@@ -1,36 +1,43 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { Button } from "@/app/ui/button";
-import { MenuTable, MemberTable } from "@/app/lib/definitions";
+import { MenuTable, PelangganTable } from "@/app/lib/definitions";
 import { createTransaksi } from "@/app/lib/actions";
 import ErrorMessages from "./error-message";
 import MenuList from "./menu-list";
-import MemberSelector from "./member-selector";
+import PelangganSelector from "./pelanggan-selector";
 import PaymentDetails from "./payment-details";
 import { useRouter } from "next/navigation";
 
+// ✅ Tambahkan fungsi format Rupiah
+const formatRupiah = (angka: number) => {
+  if (isNaN(angka)) return "Rp. 0";
+  return "Rp. " + angka.toLocaleString("id-ID");
+};
+
 export default function TransaksiCreateForm({
   menu,
-  member,
+  pelanggan,
 }: {
   menu: MenuTable[];
-  member: MemberTable[];
+  pelanggan: PelangganTable[];
 }) {
   const router = useRouter();
   const [selectedMenus, setSelectedMenus] = useState<any[]>([]);
   const [totalHarga, setTotalHarga] = useState(0);
   const [tanggalTransaksi, setTanggalTransaksi] = useState("");
   const [pembayaran, setPembayaran] = useState(0);
-  const [selectedMember, setSelectedMember] = useState<string>(""); 
-  const [referralPhone, setReferralPhone] = useState<string>(""); 
-  const [selectedMemberName, setSelectedMemberName] = useState<string>(""); 
+  const [selectedPelanggan, setSelectedPelanggan] = useState<string>("");
+  const [referralPhone, setReferralPhone] = useState<string>("");
+  const [selectedPelangganName, setSelectedPelangganName] =
+    useState<string>("");
   const [errors, setErrors] = useState<{
     menu?: string;
     pembayaran?: string;
     referral?: string;
   }>({});
 
-  // Format tanggal
+  // Format tanggal otomatis
   const formatDate = (date: Date) =>
     new Intl.DateTimeFormat("id-ID", {
       year: "numeric",
@@ -49,12 +56,14 @@ export default function TransaksiCreateForm({
   }, [selectedMenus]);
 
   const validateReferral = () => {
-    const currentMember = member.find((m) => m.id === selectedMember);
+    const currentPelanggan = pelanggan.find((m) => m.id === selectedPelanggan);
 
-    if (currentMember?.referral_count! >= 3) {
+    if (currentPelanggan?.referral_count! >= 3) {
       if (referralPhone) {
-        const referredMember = member.find((m) => m.nohp_member === referralPhone);
-        if (referredMember && referredMember.id !== selectedMember) {
+        const referredPelanggan = pelanggan.find(
+          (m) => m.nohp_pelanggan === referralPhone
+        );
+        if (referredPelanggan && referredPelanggan.id !== selectedPelanggan) {
           return {
             isValid: true,
             message: "Referral valid. Diskon 40% diterapkan.",
@@ -63,7 +72,8 @@ export default function TransaksiCreateForm({
         } else {
           return {
             isValid: false,
-            message: "Kode referral tidak valid atau sama dengan anggota yang dipilih.",
+            message:
+              "Kode referral tidak valid atau sama dengan anggota yang dipilih.",
           };
         }
       }
@@ -75,8 +85,10 @@ export default function TransaksiCreateForm({
     }
 
     if (referralPhone) {
-      const referredMember = member.find((m) => m.nohp_member === referralPhone);
-      if (referredMember && referredMember.id !== selectedMember) {
+      const referredPelanggan = pelanggan.find(
+        (m) => m.nohp_pelanggan === referralPhone
+      );
+      if (referredPelanggan && referredPelanggan.id !== selectedPelanggan) {
         return {
           isValid: true,
           message: "Referral valid. Diskon 10% diterapkan.",
@@ -85,7 +97,8 @@ export default function TransaksiCreateForm({
       } else {
         return {
           isValid: false,
-          message: "Kode referral tidak valid atau sama dengan anggota yang dipilih.",
+          message:
+            "Kode referral tidak valid atau sama dengan anggota yang dipilih.",
         };
       }
     }
@@ -150,12 +163,15 @@ export default function TransaksiCreateForm({
 
     try {
       const formData = new FormData();
-      formData.append("member_id", selectedMember || "");
-      formData.append("member_nama", selectedMemberName || "");
+      formData.append("pelanggan_id", selectedPelanggan || "");
+      formData.append("pelanggan_nama", selectedPelangganName || "");
       formData.append("tanggal_transaksi", tanggalTransaksi);
-      formData.append("total_harga", discountedTotal.toString()); // Kirimkan total harga yang sudah didiskon
+      formData.append("total_harga", discountedTotal.toString());
       formData.append("pembayaran", pembayaran.toString());
-      formData.append("kembalian", (pembayaran - discountedTotal).toString());
+      formData.append(
+        "kembalian",
+        (pembayaran - discountedTotal).toString()
+      );
 
       if (referralPhone) {
         formData.append("referralPhone", referralPhone);
@@ -181,20 +197,25 @@ export default function TransaksiCreateForm({
     <form onSubmit={handleSubmit}>
       <div className="rounded-md bg-gray-50 p-4 md:p-6">
         <ErrorMessages errors={errors} />
+
         <MenuList
           menu={menu}
           selectedMenus={selectedMenus}
           setSelectedMenus={setSelectedMenus}
         />
-        <MemberSelector
-          setSelectedMemberName={setSelectedMemberName}
-          member={member}
-          selectedMember={selectedMember}
-          setSelectedMember={setSelectedMember}
+
+        <PelangganSelector
+          setSelectedPelangganName={setSelectedPelangganName}
+          pelanggan={pelanggan}
+          selectedPelanggan={selectedPelanggan}
+          setSelectedPelanggan={setSelectedPelanggan}
         />
 
         <div className="mb-4">
-          <label htmlFor="referralPhone" className="block text-sm font-medium mb-2">
+          <label
+            htmlFor="referralPhone"
+            className="block text-sm font-medium mb-2"
+          >
             Nomor HP Referral (Opsional)
           </label>
           <input
@@ -218,15 +239,24 @@ export default function TransaksiCreateForm({
           )}
         </div>
 
+        {/* ✅ Total Harga ditampilkan dengan format Rupiah */}
+        <div className="mb-4">
+          <p className="text-lg font-semibold">
+            Total Harga: {formatRupiah(applyDiscount())}
+          </p>
+        </div>
+
         <PaymentDetails
           totalHarga={applyDiscount()}
           pembayaran={pembayaran}
           setPembayaran={setPembayaran}
           tanggalTransaksi={tanggalTransaksi}
         />
+
         {errors.pembayaran && (
           <p className="text-red-600 text-sm mt-2">{errors.pembayaran}</p>
         )}
+
         <div className="flex gap-4 justify-end mt-6">
           <Button type="submit">Simpan</Button>
           <Button type="button" onClick={handleReset}>

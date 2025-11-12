@@ -10,6 +10,18 @@ const months = [
   'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember',
 ];
 
+// ✅ Fungsi bantu format rupiah
+const formatRupiah = (value: number) => {
+  return new Intl.NumberFormat('id-ID', {
+    style: 'currency',
+    currency: 'IDR',
+    minimumFractionDigits: 0,
+  })
+    .format(value)
+    .replace('IDR', 'Rp.')
+    .replace(/\s/g, '');
+};
+
 export default function LaporanClient({
   initialMonth,
   initialReportData,
@@ -58,9 +70,9 @@ export default function LaporanClient({
           (item, index) => `
                   <tr>
                     <td style="border: 1px solid #ddd; padding: 8px;">${index + 1}</td>
-                    <td style="border: 1px solid #ddd; padding: 8px;">${item.member_nama}</td>
+                    <td style="border: 1px solid #ddd; padding: 8px;">${item.pelanggan_nama}</td>
                     <td style="border: 1px solid #ddd; padding: 8px;">${item.tanggal_transaksi}</td>
-                    <td style="border: 1px solid #ddd; padding: 8px;">${item.total_harga.toLocaleString('id-ID', { style: 'currency', currency: 'IDR' })}</td>
+                    <td style="border: 1px solid #ddd; padding: 8px;">${formatRupiah(item.total_harga)}</td>
                   </tr>
                 `
         )
@@ -86,13 +98,12 @@ export default function LaporanClient({
 
   const handlePrint = (transaksiId: number) => {
     const transaksi = reportData.filter((data) => data.transaksi_id === transaksiId);
-
     if (!transaksi.length) return;
 
     const printContent = `
       <div style="font-family: Arial, sans-serif; margin: 20px;">
         <h1 style="text-align: center;">Laporan Penjualan Bulan ${months[selectedMonth! - 1]}</h1>
-        <p><strong>Nama Member:</strong> ${transaksi[0]?.member_nama || 'Tidak Diketahui'}</p>
+        <p><strong>Nama Pelanggan:</strong> ${transaksi[0]?.pelanggan_nama || 'Tidak Diketahui'}</p>
         <p><strong>Tanggal:</strong> ${transaksi[0]?.tanggal_transaksi}</p>
         <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
           <thead>
@@ -112,17 +123,17 @@ export default function LaporanClient({
                     <td style="border: 1px solid #ddd; padding: 8px;">${index + 1}</td>
                     <td style="border: 1px solid #ddd; padding: 8px;">${item.nama_menu}</td>
                     <td style="border: 1px solid #ddd; padding: 8px;">${item.jumlah}</td>
-                    <td style="border: 1px solid #ddd; padding: 8px;">${item.total_menu_harga.toLocaleString('id-ID', { style: 'currency', currency: 'IDR' })}</td>
-                    <td style="border: 1px solid #ddd; padding: 8px;">${(item.jumlah * item.total_menu_harga).toLocaleString('id-ID', { style: 'currency', currency: 'IDR' })}</td>
+                    <td style="border: 1px solid #ddd; padding: 8px;">${formatRupiah(item.total_menu_harga)}</td>
+                    <td style="border: 1px solid #ddd; padding: 8px;">${formatRupiah(item.jumlah * item.total_menu_harga)}</td>
                   </tr>
                 `
         )
         .join('')}
           </tbody>
         </table>
-        <p style="margin-top: 20px;"><strong>Total Harga:</strong> ${transaksi[0]?.total_harga.toLocaleString('id-ID', { style: 'currency', currency: 'IDR' })}</p>
-        <p><strong>Pembayaran:</strong> ${transaksi[0]?.pembayaran.toLocaleString('id-ID', { style: 'currency', currency: 'IDR' })}</p>
-        <p><strong>Kembalian:</strong> ${transaksi[0]?.kembalian.toLocaleString('id-ID', { style: 'currency', currency: 'IDR' })}</p>
+        <p style="margin-top: 20px;"><strong>Total Harga:</strong> ${formatRupiah(transaksi[0]?.total_harga || 0)}</p>
+        <p><strong>Pembayaran:</strong> ${formatRupiah(transaksi[0]?.pembayaran || 0)}</p>
+        <p><strong>Kembalian:</strong> ${formatRupiah(transaksi[0]?.kembalian || 0)}</p>
       </div>
     `;
 
@@ -162,6 +173,7 @@ export default function LaporanClient({
           </button>
         ))}
       </div>
+
       <div className="mt-4 text-center">
         {uniqueTransactions.length > 0 && (
           <Button
@@ -180,7 +192,7 @@ export default function LaporanClient({
               <thead className="bg-gray-50">
                 <tr>
                   <th className="px-4 py-2">No</th>
-                  <th className="px-4 py-2">Nama Member</th>
+                  <th className="px-4 py-2">Nama Pelanggan</th>
                   <th className="px-4 py-2">Tanggal Transaksi</th>
                   <th className="px-4 py-2">Total Harga</th>
                   <th className="px-4 py-2">Aksi</th>
@@ -191,10 +203,10 @@ export default function LaporanClient({
                   uniqueTransactions.map((item, index) => (
                     <tr key={item.transaksi_id} className="border-b">
                       <td className="px-4 py-2 text-center">{index + 1}</td>
-                      <td className="px-4 py-2">{item.member_nama}</td>
+                      <td className="px-4 py-2">{item.pelanggan_nama}</td>
                       <td className="px-4 py-2">{item.tanggal_transaksi}</td>
                       <td className="px-4 py-2 text-right">
-                        {item.total_harga.toLocaleString('id-ID', { style: 'currency', currency: 'IDR' })}
+                        {formatRupiah(item.total_harga)}
                       </td>
                       <td className="px-4 py-2 text-center">
                         <Button

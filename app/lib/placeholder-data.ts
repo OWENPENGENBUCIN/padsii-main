@@ -16,10 +16,7 @@ const pelanggans = [
 ];
 
 const menus = [
-  {
-    nama_pelanggan: 'Chicken Fillet Nashville',
-    harga_pelanggan: 30000,
-  },
+ 
   {
     nama_menu: 'Nashville Rice Box Original',
     harga_menu: 30000,

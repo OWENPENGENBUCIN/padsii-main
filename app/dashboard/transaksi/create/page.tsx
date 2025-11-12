@@ -1,11 +1,11 @@
 import Form from '@/app/ui/transaksi/create-form';
 import Breadcrumbs from '@/app/ui/transaksi/breadcrumbs';
 import { fetchMenus } from '@/app/lib/menu/menu';
-import { fetchMembers } from '@/app/lib/pelanggans/pelanggan';
+import { fetchpelanggans } from '@/app/lib/pelanggans/pelanggan';
  
 export default async function Page() {
   const menus = await fetchMenus();
-  const members = await fetchMembers();
+  const pelanggans = await fetchpelanggans();
  
   return (
     <main>
@@ -19,7 +19,7 @@ export default async function Page() {
           },
         ]}
       />
-      <Form menu={menus} member={members} />
+      <Form menu={menus} pelanggan={pelanggans} />
     </main>
   );
 }

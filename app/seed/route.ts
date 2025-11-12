@@ -1,139 +1,64 @@
-import bcrypt from 'bcrypt';
 import { db } from '@vercel/postgres';
-import { pelanggans, users, transaksis, menus } from '../lib/placeholder-data';
+import { NextResponse } from 'next/server';
 
-const client = await db.connect();
+export async function POST(req: Request) {
+  const client = await db.connect();
 
-async function seedUsers() {
-  await client.sql`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`;
-  await client.sql`
-    CREATE TABLE IF NOT EXISTS users (
-      id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-      name VARCHAR(255) NOT NULL,
-      email VARCHAR(255) NOT NULL UNIQUE,
-      password VARCHAR(255) NOT NULL,
-      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    ); 
-  `;
-
-  const insertedUsers = await Promise.all(
-    users.map(async (user) => {
-      const hashedPassword = await bcrypt.hash(user.password, 10);
-      return client.sql`
-        INSERT INTO users (id, name, email, password)
-        VALUES (${user.id}, ${user.name}, ${user.email}, ${hashedPassword})
-        ON CONFLICT (id) DO NOTHING;
-      `;
-    })
-  );
-
-  return insertedUsers;
-}
-
-async function seedPelanggans() {
-  await client.sql`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`;
-  await client.sql`
-    CREATE TABLE IF NOT EXISTS pelanggans (
-      id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-      nama_pelanggan VARCHAR(255) NOT NULL,
-      nohp_pelanggan VARCHAR(255) NOT NULL,
-      referral_count INT DEFAULT 0,
-      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    );
-  `;
-
-  const insertedPelanggans = await Promise.all(
-    pelanggans.map(
-      (pelanggan) => client.sql`
-        INSERT INTO pelanggans (nama_pelanggan, nohp_pelanggan)
-        VALUES (${pelanggan.nama_pelanggan}, ${pelanggan.nohp_pelanggan})
-        ON CONFLICT (id) DO NOTHING;
-      `
-    )
-  );
-
-  return insertedPelanggans;
-}
-
-async function seedMenu() {
-  await client.sql`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`;
-  await client.sql`
-    CREATE TABLE IF NOT EXISTS menus (
-      id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-      nama_menu VARCHAR(255) NOT NULL,
-      harga_menu DECIMAL(15,2) NOT NULL,
-      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    );
-  `;
-
-  const insertedMenu = await Promise.all(
-    menus.map(
-      (menu) => client.sql`
-        INSERT INTO menus (nama_menu, harga_menu)
-        VALUES (${menu.nama_menu}, ${menu.harga_menu})
-        ON CONFLICT (id) DO NOTHING;
-      `
-    )
-  );
-
-  return insertedMenu;
-}
-
-async function seedTransaksi() {
-  await client.sql`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`;
-  await client.sql`
-    CREATE TABLE IF NOT EXISTS transaksis (
-      id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-      pelanggan_nama VARCHAR(255) NOT NULL,
-      tanggal_transaksi DATE NOT NULL,
-      total_harga DECIMAL(15,2) NOT NULL,
-      pembayaran DECIMAL(15,2) NOT NULL,
-      kembalian DECIMAL(15,2) NOT NULL,
-      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    );
-  `;
-
-  const insertedTransaksi = await Promise.all(
-    transaksis.map(
-      (transaksi) => client.sql`
-        INSERT INTO transaksis (pelanggan_nama, tanggal_transaksi, total_harga, pembayaran, kembalian)
-        VALUES (${transaksi.pelanggan_nama}, ${transaksi.tanggal_transaksi}, ${transaksi.total_harga}, ${transaksi.pembayaran}, ${transaksi.kembalian})
-        ON CONFLICT (id) DO NOTHING;
-      `
-    )
-  );
-
-  return insertedTransaksi;
-}
-
-async function seedTransaksiMenus() {
-  await client.sql`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`;
-  await client.sql`
-    CREATE TABLE IF NOT EXISTS transaksi_menus (
-      id SERIAL PRIMARY KEY,
-      transaksi_id UUID REFERENCES transaksis(id) ON DELETE CASCADE,
-      menu_id UUID REFERENCES menus(id) ON DELETE CASCADE,
-      jumlah INTEGER NOT NULL,
-      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    );
-  `;
-}
-
-export async function GET() {
   try {
+    const formData = await req.formData();
+
+    const pelanggan_nama = formData.get("pelanggan_nama") as string;
+    const tanggal_transaksi = formData.get("tanggal_transaksi") as string;
+    const total_harga = parseFloat(formData.get("total_harga") as string);
+    const pembayaran = parseFloat(formData.get("pembayaran") as string);
+    const kembalian = parseFloat(formData.get("kembalian") as string);
+    const pelanggan_id = formData.get("pelanggan_id") as string;
+
+    // Data menu dikirim terpisah dari formData
+    const menusRaw = formData.get("menus") as string | null;
+    const selectedMenus = menusRaw ? JSON.parse(menusRaw) : [];
+
     await client.sql`BEGIN`;
-    await seedUsers();
-    await seedPelanggans();
-    await seedMenu();
-    await seedTransaksi();
-    await seedTransaksiMenus();
+
+    // 1️⃣ Insert transaksi baru
+    const { rows } = await client.sql`
+      INSERT INTO transaksis (pelanggan_nama, tanggal_transaksi, total_harga, pembayaran, kembalian)
+      VALUES (${pelanggan_nama}, ${tanggal_transaksi}, ${total_harga}, ${pembayaran}, ${kembalian})
+      RETURNING id;
+    `;
+
+    const transaksiId = rows[0].id;
+
+    // 2️⃣ Simpan item menu yang dibeli
+    for (const menu of selectedMenus) {
+      await client.sql`
+        INSERT INTO transaksi_menus (transaksi_id, menu_id, jumlah)
+        VALUES (${transaksiId}, ${menu.id}, ${menu.jumlah});
+      `;
+    }
+
+    // 3️⃣ Tambah jumlah transaksi pelanggan
+    await client.sql`
+      UPDATE pelanggans
+      SET jumlah_transaksi = COALESCE(jumlah_transaksi, 0) + 1
+      WHERE id = ${pelanggan_id};
+    `;
+
     await client.sql`COMMIT`;
 
-    return Response.json({ message: 'Database seeded successfully' });
-  } catch (error) {
-    await client.sql`ROLLBACK`;
+    return NextResponse.json({
+      success: true,
+      message: "Transaksi berhasil disimpan dan jumlah transaksi pelanggan diperbarui.",
+    });
 
-    const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
-    return Response.json({ error: errorMessage }, { status: 500 });
+  } catch (error: any) {
+    await client.sql`ROLLBACK`;
+    console.error("Error saat menyimpan transaksi:", error);
+    return NextResponse.json({
+      success: false,
+      message: error.message || "Gagal menyimpan transaksi.",
+    }, { status: 500 });
+  } finally {
+    client.release();
   }
 }

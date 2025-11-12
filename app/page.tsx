@@ -11,7 +11,7 @@ export default function Page() {
       <header className="flex justify-between items-center bg-white p-2 shadow-md">
         {/* Teks Nashville Hot Chicken di sisi kiri */}
         <div className="text-lg font-bold text-gray-800">
-          <h1>Heatbite Nashville</h1>
+          <h1>Babipedia</h1>
         </div>
         {/* Tombol Login di sisi kanan */}
         <div>
@@ -27,10 +27,10 @@ export default function Page() {
       {/* Background Image */}
       <div className="relative flex-1">
         <Image
-          src="/Nashville_Hot.jpg"
+          src="/ba.jpg"
           layout="fill"
           objectFit="cover"
-          alt="Nashville Hot Chicken"
+          alt="Babipedia"
         />
 
         {/* Text Overlay */}
@@ -41,7 +41,7 @@ export default function Page() {
               textShadow: "4px 4px 8px rgba(0, 0, 0, 0.6)", // Efek bayangan teks
             }}
           >
-            Nashville Hot Chicken
+            Babipedia
             <p className="text-sm text-white">Deliciously Spicy and Crispy</p>
           </h1>
         
