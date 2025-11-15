@@ -9,11 +9,9 @@ export default function Page() {
         <main className="flex min-h-screen flex-col relative">
       {/* Header */}
       <header className="flex justify-between items-center bg-white p-2 shadow-md">
-        {/* Teks Nashville Hot Chicken di sisi kiri */}
         <div className="text-lg font-bold text-gray-800">
           <h1>Babipedia</h1>
-        </div>
-        {/* Tombol Login di sisi kanan */}
+        </div>  
         <div>
           <Link
             href="/login"
